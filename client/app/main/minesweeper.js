@@ -11,10 +11,9 @@ var Game = {
     return game;
   },
   isGameOver: function() {
-    for (var i = 0; i < MINES; i++) {
-      for(var j = 0; j < MINES; j++) {
+    for (var i = 0; i < WIDTH; i++) {
+      for(var j = 0; j < WIDTH; j++) {
         var spot = this.minefield.getSpot(i, j);
-
         if(spot.isRevealed && spot.mine === true) {
           this.winner = false;
           return true;
@@ -29,7 +28,7 @@ var Game = {
     return true;
   },
   revealSpot: function(spot) {
-    spot.reveal();
+    spot.reveal(this.minefield);
     return this.isGameOver();
   }
 };
@@ -61,24 +60,28 @@ var Minefield = {
   placeRandomMines: function() {
     var minesPlaced = 0;
     while (minesPlaced < MINES) {
-      this.placeRandomMine();
+      if (this.placeRandomMine()) {
+        minesPlaced++;
+      }
     }
   },
   placeRandomMine: function() {
     var row = Math.floor(Math.random() * WIDTH);
     var column = Math.floor(Math.random() * WIDTH);
     var spot = this.getSpot(row, column);
-    spot.mine = true;
+    if (spot.mine === false) {
+      spot.mine = true;
+      return true;
+    }
+    return false;
   },
   getSpot: function(row, column) {
-    var rows = this.rows[row];
-    console.log("row: " + row + "/ column: " + column);
-    console.log(rows.spots[column]);
-    return rows.spots[column];
+    var thisRow = this.rows[row];
+    return thisRow.spots[column];
   },
   calculateAllNumbers: function() {
-    for (var i = 0; i < MINES; i++) {
-      for (var j = 0; j < MINES; j++) {
+    for (var i = 0; i < WIDTH; i++) {
+      for (var j = 0; j < WIDTH; j++) {
         var spot = this.getSpot(i, j);
         spot.setNumMinesNear(this);
       }
@@ -87,11 +90,14 @@ var Minefield = {
 };
 
 var Spot = {
+  neighbors: [],
   initialize: function(x, y) {
     this.xCoord = x;
     this.yCoord = y;
     this.isRevealed = false;
     this.mine = false;
+    this.minesNearby = 0;
+    this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/covered.png";
   },
   create: function(x, y) {
     var spot = Object.create(Spot);
@@ -102,19 +108,69 @@ var Spot = {
     if (this.mine === true) {
       return;
     }
-
-    var numMines = 0;
+    this.neighbors = [];
     for (var x = Math.max(0, this.xCoord - 1); x <= Math.min(WIDTH - 1, this.xCoord + 1); x++) {
       for (var y = Math.max(0, this.yCoord - 1); y <= Math.min(WIDTH - 1, this.yCoord + 1); y++) {
-        if (minefield.rows[x].spots[y].mine === true) {
-          numMines++;
+        if (this.xCoord === 5 && this.yCoord === 5) {
+          console.log('x: ' + x + ' / y: ' + y);
+        }
+        var checkSpot = minefield.getSpot(x, y);
+        if (checkSpot !== this) {          
+          this.neighbors.push({x: x, y: y});
+          if (checkSpot.mine === true) {
+            this.minesNearby++;
+          }
         }
       }
     }
-    return numMines;
+    if (this.xCoord === 5 && this.yCoord === 5) {
+      console.log(this.neighbors.length);
+    }
   },
-  reveal: function() {
+  reveal: function(minefield) {
     this.isRevealed = true;
-
+    if (this.mine === true) {
+      this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/mine.png";
+    } else if (this.minesNearby > 0) {
+      switch(this.minesNearby) {
+        case 1:
+          this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/number-1.png";
+          break;
+        case 2:
+          this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/number-2.png";
+          break;
+        case 3:
+          this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/number-3.png";
+          break;
+        case 4:
+          this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/number-4.png";
+          break;
+        case 5:
+          this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/number-5.png";
+          break;
+        case 6:
+          this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/number-6.png";
+          break;
+        case 7:
+          this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/number-7.png";
+          break;
+        case 8:
+          this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/number-8.png";
+          break;
+      }
+    } else {
+      this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/empty.png";
+      this.revealNeighbors(minefield);
+    }
+  },
+  revealNeighbors: function(minefield) {
+    for (var i = 0; i < this.neighbors.length; i++) {
+      var x = this.neighbors[i].x;
+      var y = this.neighbors[i].y;
+      var neighbor = minefield.getSpot(x, y);
+      if (!neighbor.isRevealed) {
+        neighbor.reveal(minefield);
+      }
+    }
   }
 };

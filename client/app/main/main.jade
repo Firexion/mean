@@ -12,8 +12,9 @@ div(ng-include='"components/navbar/navbar.html"')
       h1.page-header Minesweeper
       div.minefield
         div(ng-repeat="row in game.minefield.rows")
-          div(ng-repeat="spot in row.spots" ng-click="game.revealSpot(spot)")
-            spot.mine
+          button(ng-repeat="spot in row.spots" ng-click="game.revealSpot(spot)" ng-disabled="{{spot.isRevealed}}")
+            img(ng-src="{{spot.image}}")
+            
 
 
 footer.footer
