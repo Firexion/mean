@@ -1,25 +1,19 @@
 div(ng-include='"components/navbar/navbar.html"')
 
-
-// header#banner.hero-unit
-  .container
-    h1 'Allo, 'Allo!
-    p.lead Kick-start your next web app with Angular Fullstack
-
 .container
   .row
     .col-lg-12
       h1.page-header Minesweeper
       div.minefield
         div(ng-repeat="row in game.minefield.rows")
-          button(ng-repeat="spot in row.spots" ng-click="game.revealSpot(spot)" ng-disabled="{{spot.isRevealed}}")
+          button(ng-repeat="spot in row.spots" ng-click="reveal(spot)" ng-disabled="{{spot.isRevealed}}")
             img(ng-src="{{spot.image}}")
             
-
-
 footer.footer
   .container
     p
       a(href='http://firexion.com/contact') Email
       = ' | '
       a(href='https://github.com/Firexion/Minesweeper') Issues
+
+div(ng-include='"client/app/main/gameOver.jade"')      

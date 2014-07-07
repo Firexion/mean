@@ -11,18 +11,25 @@ var Game = {
     return game;
   },
   isGameOver: function() {
+    var unrevealed = false;
     for (var i = 0; i < WIDTH; i++) {
       for(var j = 0; j < WIDTH; j++) {
         var spot = this.minefield.getSpot(i, j);
-        if(spot.isRevealed && spot.mine === true) {
+        if(spot.isRevealed) {
+          console.log(spot);
+        }
+        if(spot.isRevealed && spot.mine) {
           this.winner = false;
           return true;
         }
 
-        if(spot.isRevealed && spot.mine !== true) {
-          return false;
+        if(!spot.isRevealed && !spot.mine) {
+          unrevealed = true;
         }
       }
+    }
+    if (unrevealed) {
+      return false;
     }
     this.winner = true;
     return true;
@@ -69,7 +76,7 @@ var Minefield = {
     var row = Math.floor(Math.random() * WIDTH);
     var column = Math.floor(Math.random() * WIDTH);
     var spot = this.getSpot(row, column);
-    if (spot.mine === false) {
+    if (!spot.mine) {
       spot.mine = true;
       return true;
     }
@@ -105,15 +112,12 @@ var Spot = {
     return spot;
   },
   setNumMinesNear: function(minefield) {
-    if (this.mine === true) {
+    if (this.mine) {
       return;
     }
     this.neighbors = [];
     for (var x = Math.max(0, this.xCoord - 1); x <= Math.min(WIDTH - 1, this.xCoord + 1); x++) {
       for (var y = Math.max(0, this.yCoord - 1); y <= Math.min(WIDTH - 1, this.yCoord + 1); y++) {
-        if (this.xCoord === 5 && this.yCoord === 5) {
-          console.log('x: ' + x + ' / y: ' + y);
-        }
         var checkSpot = minefield.getSpot(x, y);
         if (checkSpot !== this) {          
           this.neighbors.push({x: x, y: y});
@@ -122,9 +126,6 @@ var Spot = {
           }
         }
       }
-    }
-    if (this.xCoord === 5 && this.yCoord === 5) {
-      console.log(this.neighbors.length);
     }
   },
   reveal: function(minefield) {

@@ -1,0 +1,8 @@
+div
+  div.modal-header
+    h3.modal-title Game Over
+  div.modal-body {{winner}}
+    p Do you want to play again?
+  div.modal-footer
+    button.btn.btn-primary(ng-click="ok()") OK
+    button.btn.btn-warning(ng-click="cancel()") Cancel
