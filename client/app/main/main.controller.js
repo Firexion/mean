@@ -10,9 +10,9 @@ angular.module('yoMinesweeperApp')
         templateUrl: 'gameOver.jade',
         controller: GameOverCtrl,
         resolve: {
-          winner: function () {
+          won: function () {
           	console.log("Test");
-            return $scope.game.winner;
+            return $scope.game.won;
           }
         }
      });
@@ -28,11 +28,11 @@ angular.module('yoMinesweeperApp')
   });
 
 
-var GameOverCtrl = function ($scope, $modalInstance, winner) {
-  if (winner) {
-    $scope.winner = "You win! \nGreat game.";
+var GameOverCtrl = function ($scope, $modalInstance, won) {
+  if (won) {
+    $scope.won = "You win! \nGreat game.";
   } else {
-    $scope.winner = "You lose. \nPlease try again.";
+    $scope.won = "You lose. \nPlease try again.";
   }
 
 
