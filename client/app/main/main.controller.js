@@ -18,7 +18,7 @@ angular.module('yoMinesweeperApp')
      });
 
      gameOverModal.result.then(function() {
-       //$scope.game.restart();
+       $scope.game.reset();
      }, function () {
          $log.info('Modal dismissed at: ' + new Date());
      });
@@ -29,6 +29,7 @@ angular.module('yoMinesweeperApp')
 
 
 var GameOverCtrl = function ($scope, $modalInstance, won) {
+	console.log(won);
   if (won) {
     $scope.won = "You win! \nGreat game.";
   } else {

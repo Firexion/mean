@@ -10,16 +10,17 @@ var Game = {
     game.initialize();
     return game;
   },
+  reset: function() {
+    this.minefield.reset();
+    this.won = null;
+  },
   revealSpot: function(spot) {
     if(spot.reveal(this.minefield)) {
-      console.log('lost');
       this.won = false;
-      this.gameOver = true;
       return true;
     }
     if (this.minefield.spotsChecked === WIDTH * WIDTH - MINES) {
       this.won = true;
-      this.gameOver = true;
       return true;
     }
     return false;
@@ -50,6 +51,16 @@ var Minefield = {
     var mineField = Object.create(Minefield);
     mineField.initialize();
     return mineField;
+  },
+  reset: function() {
+    this.spotsChecked = 0;
+    this.rows.forEach(function(row) {
+      row.spots.forEach(function(spot) {
+        spot.reset();
+      });
+    });
+    this.placeRandomMines();
+    this.calculateAllNumbers();
   },
   placeRandomMines: function() {
     var minesPlaced = 0;
@@ -97,6 +108,12 @@ var Spot = {
     var spot = Object.create(Spot);
     spot.initialize(x, y);
     return spot;
+  },
+  reset: function() {
+    this.isRevealed = false;
+    this.mine = false;
+    this.minesNearby = 0;
+    this.image = "http://luis-perez.s3-us-west-2.amazonaws.com/angularjs-minesweeper-game/covered.png";
   },
   setNumMinesNear: function(minefield) {
     if (this.mine) {
