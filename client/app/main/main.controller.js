@@ -3,15 +3,15 @@
 angular.module('yoMinesweeperApp')
   .controller('MainCtrl', function ($scope, $http, $modal, $log) {
     $scope.game = Game.create();
-    //$scope.minefield = $scope.game.minefield;
+    $scope.gameOver = "app/main/gameOver.html";
+
     $scope.reveal = function(spot) {
       if ($scope.game.revealSpot(spot)) {
       	var gameOverModal = $modal.open({
-        templateUrl: 'gameOver.jade',
+        templateUrl: $scope.gameOver,
         controller: GameOverCtrl,
         resolve: {
           won: function () {
-          	console.log("Test");
             return $scope.game.won;
           }
         }
